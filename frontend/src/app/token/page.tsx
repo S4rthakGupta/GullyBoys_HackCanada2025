@@ -16,7 +16,7 @@ export default function TokenPage() {
     <div
       className={clsx(
         "min-h-screen flex flex-col items-center justify-center transition-all duration-500",
-        isCalled ? "bg-green-200" : "bg-gradient-to-br from-blue-50 to-blue-100"
+        isCalled ? "bg-green-500" : "bg-gradient-to-br from-blue-50 to-blue-100"
       )}
     >
       
@@ -32,16 +32,14 @@ export default function TokenPage() {
       {/* Your Token */}
       <Card className="w-72 text-center shadow-lg border border-gray-300 bg-white rounded-lg p-6 mt-6">
         <CardContent>
-          <h2 className="text-lg font-semibold text-gray-600">Your Token</h2>
+          <h2 className="text-lg font-semibold text-gray-600">{isCalled ? "It's your turn" : "Your Token"}</h2>
           <p className="text-6xl font-bold text-blue-700 mt-2">{yourToken}</p>
         </CardContent>
       </Card>
 
-      {/* Separator */}
-      <Separator className="w-full max-w-3xl my-8 bg-gray-700" />
 
       {/* Footer */}
-      <footer className="text-center text-gray-500 text-sm pb-10">
+      <footer className="fixed bottom-0 text-center text-gray-500 text-sm pb-10">
         © {new Date().getFullYear()} MediQueue. All rights reserved.
       </footer>
     </div>

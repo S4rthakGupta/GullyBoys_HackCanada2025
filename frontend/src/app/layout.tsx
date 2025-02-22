@@ -27,7 +27,6 @@ export default function RootLayout({
     <ClerkProvider>
     <html lang="en">
       <body className=" bg-white text-black">
-        <NavBar /> 
         {children}
       </body>
     </html>

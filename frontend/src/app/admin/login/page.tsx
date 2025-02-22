@@ -1,47 +1,62 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import clsx from "clsx";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-export default function TokenPage() {
-  // Hardcoded token values
-  const yourToken = 25;
-  const currentToken = 25;
+export default function AdminLogin() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const router = useRouter();
 
-  // Boolean flag: If your token is called, UI changes (Green BG)
-  const isCalled = yourToken === currentToken;
+    const handleLogin = async () => {
+        setError(""); // Clear previous errors
 
-  return (
-    <div
-      className={clsx(
-        "min-h-screen flex flex-col items-center justify-center transition-all duration-500",
-        isCalled ? "bg-green-200" : "bg-gradient-to-br from-blue-50 to-blue-100"
-      )}
-    >
-      {/* Currently Serving */}
-      <p className="text-lg font-semibold text-gray-700">
-        Now Serving:{" "}
-        <span className="text-5xl font-extrabold text-red-600 animate-pulse">
-          {currentToken}
-        </span>
-      </p>
+        try {
+            // const response = await fetch("/admin/auth", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify({ email, password }),
+            // });
 
-      {/* Your Token */}
-      <Card className="w-72 text-center shadow-lg border border-gray-300 bg-white rounded-lg p-6 mt-6">
-        <CardContent>
-          <h2 className="text-lg font-semibold text-gray-600">Your Token</h2>
-          <p className="text-6xl font-bold text-blue-700 mt-2">{yourToken}</p>
-        </CardContent>
-      </Card>
+            // if (!response.ok) throw new Error("Invalid credentials");
 
-      {/* Separator */}
-      <Separator className="w-full max-w-3xl my-8 bg-gray-700" />
+            router.push("/admin/queue"); // Navigate to queue page on success
+        } catch (err) {
+            setError("Invalid email or password");
+        }
+    };
 
-      {/* Footer */}
-      <footer className="text-center text-gray-500 text-sm pb-10">
-        © {new Date().getFullYear()} MediQueue. All rights reserved.
-      </footer>
-    </div>
-  );
+    return (
+        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+            <Card className="w-96 p-6">
+                <CardHeader>
+                    <h2 className="text-center text-2xl font-semibold">Admin Login</h2>
+                </CardHeader>
+                <CardContent>
+                    <Input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="mb-4"
+                    />
+                    <Input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="mb-4"
+                    />
+                    {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+                    <Button className="w-full" onClick={handleLogin}>
+                        Login
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    );
 }

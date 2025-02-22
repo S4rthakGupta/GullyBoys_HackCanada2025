@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { FaLinkedin, FaGithub } from "react-icons/fa"; 
 import { Separator } from "@/components/ui/separator"; 
+import NavBar from "@/components/nav"; // Import Navbar
+
 
 const teamMembers = [
   {
@@ -35,7 +37,11 @@ const teamMembers = [
 
 export default function AboutPage() {
   return (
+
+
     <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 text-gray-900 pb-20">
+          <NavBar /> 
+
       {/* Header Section */}
       <div className="max-w-4xl mx-auto text-center py-12">
         <h1 className="text-5xl font-extrabold text-blue-700 drop-shadow-lg">

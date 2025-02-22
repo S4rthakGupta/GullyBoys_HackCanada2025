@@ -9,10 +9,12 @@ import {
     SignedIn,
     SignedOut,
 } from "@clerk/nextjs";
+import NavBar from "@/components/nav";
 
 export default function Home() {
     return (
         <main className="flex flex-col items-center justify-center min-h-screen px-6 bg-white text-black">
+            <NavBar />
             {/* Hero Section */}
             <section className="max-w-4xl text-center space-y-6">
                 <h1 className="text-5xl font-bold tracking-tight">

@@ -8,11 +8,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import NavBar from "@/components/nav"; // Import Navbar
+import { useRouter } from "next/navigation";
 
 export default function SetupPage() {
     const { register, handleSubmit, control } = useForm();
 
     const [loading, setLoading] = useState(false);
+
+    const router = useRouter();
+    
 
     const onSubmit = async (data: any) => {
         setLoading(true);
@@ -21,19 +26,21 @@ export default function SetupPage() {
         console.log("Form Data:", data);
 
         try {
-            const response = await fetch("/registerfortoken", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
+            // const response = await fetch("/registerfortoken", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(data),
+            // });
 
-            console.log("Response Status:", response.status);
+            // console.log("Response Status:", response.status);
 
-            if (!response.ok) {
-                throw new Error("Failed to register");
-            }
+            // if (!response.ok) {
+            //     throw new Error("Failed to register");
+            // }
 
             alert("Registration successful!");
+            router.push("/token"); // Navigate to queue page on success
+
         } catch (error) {
             console.error("Submission Error:", error);
         } finally {
@@ -42,7 +49,15 @@ export default function SetupPage() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
+        <div className="min-h-screen bg-slate-50 text-gray-900 pb-20">
+            <NavBar />
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <h1 className="text-2xl font-bold mb-4">Complete Your Setup</h1>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <h2 className="text-lg font-semibold">Personal Information</h2>
@@ -114,5 +129,7 @@ export default function SetupPage() {
                 </Button>
             </form>
         </div>
+        </div>
+       
     );
 }
