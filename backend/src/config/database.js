@@ -19,7 +19,8 @@ const db = new sqlite3.Database(dbPath, (err) => {
             name TEXT,
             phone TEXT,
             email TEXT UNIQUE,
-            role TEXT DEFAULT 'user',
+            password TEXT,
+            role TEXT DEFAULT 'patient',  -- ✅ Default role as "patient"
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);
