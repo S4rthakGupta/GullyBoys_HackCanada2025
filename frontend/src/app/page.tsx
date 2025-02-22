@@ -3,48 +3,40 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 import {
-    ClerkProvider,
-    SignInButton,
     SignedIn,
     SignedOut,
-    UserButton,
 } from "@clerk/nextjs";
 
 export default function Home() {
     return (
-        <main className="flex flex-col items-center justify-center min-h-screen px-6  bg-white text-black">
+        <main className="flex flex-col items-center justify-center min-h-screen px-6 bg-white text-black">
             {/* Hero Section */}
             <section className="max-w-4xl text-center space-y-6">
                 <h1 className="text-5xl font-bold tracking-tight">
                     Streamlining Clinic Check-ins
                 </h1>
                 <p className="text-lg text-gray-400">
-                    Effortlessly check in at clinics, skip the lines, and get
-                    updates in real-time.
+                    Effortlessly check in at clinics, skip the lines, and get updates in real-time.
                 </p>
-                
 
                 <SignedOut>
-                    <SignInButton>
+                    {/* ✅ "Get Started" navigates to `/sign-up` */}
+                    <Link href="/sign-up">
                         <Button variant="default" className="mr-3">
                             Get Started
                         </Button>
-                    </SignInButton>
+                    </Link>
                 </SignedOut>
 
                 <SignedIn>
-                  <Link href="/signin" passHref>
-                      <Button
-                          size="lg"
-                          className="mt-4 bg-blue-600 hover:bg-blue-500"
-                      >
+                    <Link href="/setup" passHref>
+                        <Button size="lg" className="mt-4 bg-blue-600 hover:bg-blue-500">
                             Get a Token
-                      </Button>
-                  </Link>
+                        </Button>
+                    </Link>
                 </SignedIn>
             </section>
 
@@ -58,8 +50,7 @@ export default function Home() {
                             Instant Check-in
                         </h2>
                         <p className="text-gray-400">
-                            Scan a QR code and register instantly without
-                            waiting in line.
+                            Scan a QR code and register instantly without waiting in line.
                         </p>
                     </CardContent>
                 </Card>
@@ -70,8 +61,7 @@ export default function Home() {
                             Real-time Updates
                         </h2>
                         <p className="text-gray-400">
-                            Get notified about your position in the queue and
-                            estimated wait time.
+                            Get notified about your position in the queue and estimated wait time.
                         </p>
                     </CardContent>
                 </Card>
@@ -82,8 +72,7 @@ export default function Home() {
                             Secure & Private
                         </h2>
                         <p className="text-gray-400">
-                            Your data is protected with end-to-end encryption
-                            and privacy-first policies.
+                            Your data is protected with end-to-end encryption and privacy-first policies.
                         </p>
                     </CardContent>
                 </Card>
