@@ -26,17 +26,17 @@ export default function SetupPage() {
         console.log("Form Data:", data);
 
         try {
-            // const response = await fetch("/registerfortoken", {
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify(data),
-            // });
+            const response = await fetch("/api/user/profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
 
-            // console.log("Response Status:", response.status);
+            console.log("Response Status:", response.status);
 
-            // if (!response.ok) {
-            //     throw new Error("Failed to register");
-            // }
+            if (!response.ok) {
+                throw new Error("Failed to register");
+            }
 
             alert("Registration successful!");
             router.push("/token"); // Navigate to queue page on success
