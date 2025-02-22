@@ -1,158 +1,118 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-const schema = z.object({
-  personalInformation: z.object({
-    fullName: z.string().min(3, "Full name is required"),
-    dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)"),
-    gender: z.enum(["Male", "Female", "Other"]),
-    address: z.string().min(5, "Address is required"),
-    phoneNumber: z.string().regex(/^\+?[0-9\s-]+$/, "Invalid phone number"),
-    emailAddress: z.string().email("Invalid email"),
-  }),
-  healthInsuranceDetails: z.object({
-    healthCardNumber: z.string().min(5, "Health card number is required"),
-    internationalStudentId: z.string().optional(),
-  }),
-  medicalHistory: z.object({
-    currentMedications: z.string().optional(),
-    allergies: z.string().optional(),
-    chronicConditions: z.string().optional(),
-    pastSurgeriesOrHospitalizations: z.string().optional(),
-  }),
-  reasonForVisit: z.object({
-    presentingSymptoms: z.string().min(3, "Presenting symptoms are required"),
-    durationOfSymptoms: z.string().min(1, "Duration is required"),
-  }),
-  emergencyContactInformation: z.object({
-    name: z.string().min(3, "Emergency contact name is required"),
-    relationship: z.string().min(3, "Relationship is required"),
-    emergencyContactNumber: z.string().regex(/^\+?[0-9\s-]+$/, "Invalid phone number"),
-  }),
-  consentAndAcknowledgments: z.object({
-    privacyPolicyAgreement: z.boolean().refine((val) => val === true, "You must agree to the Privacy Policy"),
-    treatmentConsent: z.boolean().refine((val) => val === true, "You must agree to the treatment consent"),
-  }),
-});
-
 export default function SetupPage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm({
-    resolver: zodResolver(schema),
-  });
+    const { register, handleSubmit, control } = useForm();
 
-  const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (data: any) => {
-    setLoading(true);
-    try {
-      const response = await fetch("/registerfortoken", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    const onSubmit = async (data: any) => {
+        setLoading(true);
 
-      if (!response.ok) {
-        throw new Error("Failed to register");
-      }
+        console.log("Submitting form...");
+        console.log("Form Data:", data);
 
-      alert("Registration successful!");
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+        try {
+            const response = await fetch("/registerfortoken", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
 
-  return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">Complete Your Setup</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        
-        {/* Personal Information */}
-        <h2 className="text-lg font-semibold">Personal Information</h2>
-        <Input placeholder="Full Name" {...register("personalInformation.fullName")} />
-        <p className="text-red-500">{errors.personalInformation?.fullName?.message}</p>
+            console.log("Response Status:", response.status);
 
-        <Input type="date" {...register("personalInformation.dateOfBirth")} />
-        <p className="text-red-500">{errors.personalInformation?.dateOfBirth?.message}</p>
+            if (!response.ok) {
+                throw new Error("Failed to register");
+            }
 
-        <RadioGroup onValueChange={(val) => setValue("personalInformation.gender", val)}>
-          <Label>Gender</Label>
-          <RadioGroupItem value="Male">Male</RadioGroupItem>
-          <RadioGroupItem value="Female">Female</RadioGroupItem>
-          <RadioGroupItem value="Other">Other</RadioGroupItem>
-        </RadioGroup>
-        <p className="text-red-500">{errors.personalInformation?.gender?.message}</p>
+            alert("Registration successful!");
+        } catch (error) {
+            console.error("Submission Error:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        <Input placeholder="Address" {...register("personalInformation.address")} />
-        <p className="text-red-500">{errors.personalInformation?.address?.message}</p>
+    return (
+        <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
+            <h1 className="text-2xl font-bold mb-4">Complete Your Setup</h1>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <h2 className="text-lg font-semibold">Personal Information</h2>
+                <Input placeholder="Full Name" {...register("personalInformation.fullName")} />
+                <Input type="date" {...register("personalInformation.dateOfBirth")} />
 
-        <Input placeholder="Phone Number" {...register("personalInformation.phoneNumber")} />
-        <p className="text-red-500">{errors.personalInformation?.phoneNumber?.message}</p>
+                <Controller
+                    name="personalInformation.gender"
+                    control={control}
+                    render={({ field }) => (
+                        <RadioGroup onValueChange={field.onChange} value={field.value}>
+                            <Label>Gender</Label>
+                            <RadioGroupItem value="Male">Male</RadioGroupItem>
+                            <RadioGroupItem value="Female">Female</RadioGroupItem>
+                            <RadioGroupItem value="Other">Other</RadioGroupItem>
+                        </RadioGroup>
+                    )}
+                />
 
-        <Input type="email" placeholder="Email Address" {...register("personalInformation.emailAddress")} />
-        <p className="text-red-500">{errors.personalInformation?.emailAddress?.message}</p>
+                <Input placeholder="Address" {...register("personalInformation.address")} />
+                <Input placeholder="Phone Number" {...register("personalInformation.phoneNumber")} />
+                <Input type="email" placeholder="Email Address" {...register("personalInformation.emailAddress")} />
 
-        {/* Health Insurance */}
-        <h2 className="text-lg font-semibold">Health Insurance Details</h2>
-        <Input placeholder="Health Card Number" {...register("healthInsuranceDetails.healthCardNumber")} />
-        <p className="text-red-500">{errors.healthInsuranceDetails?.healthCardNumber?.message}</p>
+                <h2 className="text-lg font-semibold">Health Insurance Details</h2>
+                <Input placeholder="Health Card Number" {...register("healthInsuranceDetails.healthCardNumber")} />
 
-        <Input placeholder="International Student ID (Optional)" {...register("healthInsuranceDetails.internationalStudentId")} />
+                <h2 className="text-lg font-semibold">Medical History</h2>
+                <Textarea placeholder="Current Medications" {...register("medicalHistory.currentMedications")} />
+                <Textarea placeholder="Allergies" {...register("medicalHistory.allergies")} />
+                <Textarea placeholder="Chronic Conditions" {...register("medicalHistory.chronicConditions")} />
+                <Textarea placeholder="Past Surgeries / Hospitalizations" {...register("medicalHistory.pastSurgeriesOrHospitalizations")} />
 
-        {/* Medical History */}
-        <h2 className="text-lg font-semibold">Medical History</h2>
-        <Textarea placeholder="Current Medications" {...register("medicalHistory.currentMedications")} />
-        <Textarea placeholder="Allergies" {...register("medicalHistory.allergies")} />
-        <Textarea placeholder="Chronic Conditions" {...register("medicalHistory.chronicConditions")} />
-        <Textarea placeholder="Past Surgeries / Hospitalizations" {...register("medicalHistory.pastSurgeriesOrHospitalizations")} />
+                <h2 className="text-lg font-semibold">Reason for Visit</h2>
+                <Input placeholder="Presenting Symptoms" {...register("reasonForVisit.presentingSymptoms")} />
+                <Input placeholder="Duration of Symptoms" {...register("reasonForVisit.durationOfSymptoms")} />
 
-        {/* Reason for Visit */}
-        <h2 className="text-lg font-semibold">Reason for Visit</h2>
-        <Input placeholder="Presenting Symptoms" {...register("reasonForVisit.presentingSymptoms")} />
-        <p className="text-red-500">{errors.reasonForVisit?.presentingSymptoms?.message}</p>
+                <h2 className="text-lg font-semibold">Emergency Contact</h2>
+                <Input placeholder="Name" {...register("emergencyContactInformation.name")} />
+                <Input placeholder="Relationship" {...register("emergencyContactInformation.relationship")} />
+                <Input placeholder="Phone Number" {...register("emergencyContactInformation.emergencyContactNumber")} />
 
-        <Input placeholder="Duration of Symptoms" {...register("reasonForVisit.durationOfSymptoms")} />
-        <p className="text-red-500">{errors.reasonForVisit?.durationOfSymptoms?.message}</p>
+                <h2 className="text-lg font-semibold">Consent</h2>
+                <Controller
+                    name="consentAndAcknowledgments.privacyPolicyAgreement"
+                    control={control}
+                    defaultValue={false}
+                    render={({ field }) => (
+                        <div className="flex items-center space-x-2">
+                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                            <Label>I agree to the Privacy Policy</Label>
+                        </div>
+                    )}
+                />
 
-        {/* Emergency Contact */}
-        <h2 className="text-lg font-semibold">Emergency Contact</h2>
-        <Input placeholder="Name" {...register("emergencyContactInformation.name")} />
-        <Input placeholder="Relationship" {...register("emergencyContactInformation.relationship")} />
-        <Input placeholder="Phone Number" {...register("emergencyContactInformation.emergencyContactNumber")} />
+                <Controller
+                    name="consentAndAcknowledgments.treatmentConsent"
+                    control={control}
+                    defaultValue={false}
+                    render={({ field }) => (
+                        <div className="flex items-center space-x-2">
+                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                            <Label>I consent to treatment</Label>
+                        </div>
+                    )}
+                />
 
-        {/* Consent */}
-        <h2 className="text-lg font-semibold">Consent</h2>
-        <div className="flex items-center space-x-2">
-          <Checkbox {...register("consentAndAcknowledgments.privacyPolicyAgreement")} />
-          <Label>I agree to the Privacy Policy</Label>
+                <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Submitting..." : "Submit"}
+                </Button>
+            </form>
         </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox {...register("consentAndAcknowledgments.treatmentConsent")} />
-          <Label>I consent to treatment</Label>
-        </div>
-
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Submitting..." : "Submit"}
-        </Button>
-      </form>
-    </div>
-  );
+    );
 }
