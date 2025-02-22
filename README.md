@@ -103,9 +103,10 @@ GULLYBOYS_HACKCANADA2025/
 ---
 
 ## Contributors
-- **Your Name** (GitHub: [YourGitHubHandle](https://github.com/YourGitHubHandle))
-- **Team Member 2**
-- **Team Member 3**
+- **Sarthak Gupta** - *Front End Developer* (GitHub: (https://github.com/S4rthakGupta))
+- **Bibin Tom Joseph** - *Front End Developer* (GitHub:(https://github.com/bibintomj))
+- **Dheeraj Chaudhary** - *Back End Developer* (GitHub: (https://github.com/dheeraj3choudhary))
+- **Jaiv Barman** - *Back End Developer* (GitHub: (https://github.com/JB250101))
 
 ---
 
