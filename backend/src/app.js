@@ -6,6 +6,8 @@ require('dotenv').config();
 // Import routes
 const tokenRoutes = require('./routes/tokenRoutes');
 const userRoutes = require('./routes/userRoutes');
+const patientRoutes = require('./routes/patientRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // Import database connections
 const db = require('./config/database');
@@ -20,6 +22,8 @@ app.use(express.json());
 // Routes
 app.use('/api/token', tokenRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/patient', patientRoutes);
+app.use('/api', authRoutes);
 
 const PORT = process.env.PORT || 8000;
 
