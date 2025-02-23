@@ -25,7 +25,7 @@ class DatabaseManager:
         )
         """)
 
-        # ✅ Create Queue table (Fixed: Added missing fields)
+        # ✅ Create Queue table (with reason column)
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS queue (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,6 +35,7 @@ class DatabaseManager:
             pain_level INTEGER DEFAULT 0,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             status TEXT DEFAULT 'Waiting',
+            reason TEXT,  -- Added the reason column here
             FOREIGN KEY(email) REFERENCES users(email)
         )
         """)
