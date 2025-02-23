@@ -1,3 +1,16 @@
+# ✅ Core Dependencies
 streamlit==1.32.0
 pandas==2.2.0
 python-dateutil==2.8.2
+
+# ✅ Cookie Management
+extra-streamlit-components==0.1.65  # Required for cookies
+
+# ✅ Environment Variable Management
+python-dotenv==1.0.1
+
+# ✅ Database (SQLite)
+sqlite3  # SQLite comes with Python, but include it explicitly
+
+# ✅ Optional (If Using Requests or JSON Handling)
+requests==2.31.0
