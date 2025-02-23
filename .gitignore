@@ -1,0 +1,29 @@
+# Ignore Python cache & compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore Virtual Environment
+venv/
+env/
+*.venv
+
+# Ignore Database & User Data
+data/
+*.csv  # Prevent storing user & queue data
+
+# Ignore Environment Variables
+.env
+
+# Ignore Logs & Temp Files
+*.log
+*.bak
+*.tmp
+
+# Ignore Streamlit Secrets (if used)
+.streamlit/secrets.toml
+
+# Ignore VS Code & IDE files
+.vscode/
+.idea/
+*.swp
