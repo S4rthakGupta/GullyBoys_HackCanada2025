@@ -117,3 +117,26 @@ class QueueManager:
         cursor.execute("UPDATE queue SET status=? WHERE id=?", (new_status, queue_id))
         conn.commit()
         conn.close()
+
+    def get_average_wait_time(self):
+        """Calculate the average wait time for patients who have been served."""
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT AVG(julianday('now') - julianday(queue.timestamp)) * 1440
+            FROM queue WHERE queue.status = 'Completed'
+        """)
+        avg_wait_time = cursor.fetchone()[0]
+        conn.close()
+        return round(avg_wait_time) if avg_wait_time else "N/A"
+
+    def get_total_patients_served(self):
+        """Get the total number of patients who have been served today."""
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT COUNT(*) FROM queue WHERE queue.status = 'Completed'
+        """)
+        total_served = cursor.fetchone()[0]
+        conn.close()
+        return total_served
