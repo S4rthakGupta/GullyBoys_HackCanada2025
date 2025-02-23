@@ -24,7 +24,7 @@ export default function SignUpPage() {
             }),
         })
             .then((res) => {
-                if (!res.ok) throw new Error("Failed to save user");
+                if (!res.ok) console.log("Failed to save user");
                 return res.json();
             })
             .then(() => {

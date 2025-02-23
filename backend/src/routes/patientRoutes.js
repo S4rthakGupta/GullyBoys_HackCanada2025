@@ -112,7 +112,7 @@ router.post('/register', requireAuth, (req, res) => {
 
 
 // ✅ Fetch Patient Data
-router.get('/:userId', requireAuth, (req, res) => {
+router.get('/get/:userId', requireAuth, (req, res) => {
     const { userId } = req.params;
 
     db.get(
@@ -133,12 +133,25 @@ router.get('/:userId', requireAuth, (req, res) => {
 
 
 // ✅ Get Patient List (Lobby & Queue)
-router.get('/patients', requireAuth, (req, res) => {
-    db.all('SELECT * FROM patients WHERE status IN ("waiting", "inprogress")', [], (err, rows) => {
+router.get('/admitted/patients', requireAuth, (req, res) => {
+    db.all('SELECT * FROM patients WHERE status IN ("closed", "inprogress")', [], (err, rows) => {
         if (err) {
             console.error('Error fetching patients:', err);
             return res.status(500).json({ error: 'Failed to fetch patients' });
         }
+        console.log('Patients:', rows);
+        res.json(rows);
+    });
+});
+
+// ✅ Get Patient List (Lobby & Queue)
+router.get('/waiting/patients', requireAuth, (req, res) => {
+    db.all('SELECT * FROM patients WHERE status IN ("waiting")', [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching patients:', err);
+            return res.status(500).json({ error: 'Failed to fetch patients' });
+        }
+        console.log('Patients:', rows);
         res.json(rows);
     });
 });

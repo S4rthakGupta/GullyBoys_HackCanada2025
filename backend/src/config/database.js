@@ -11,6 +11,8 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
     console.log('Connected to SQLite database');
 
+    db.run("PRAGMA busy_timeout = 5000;"); 
+
     // Create users table if it doesn't exist
     db.run(`
         CREATE TABLE IF NOT EXISTS users (
@@ -21,6 +23,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
             email TEXT UNIQUE,
             password TEXT,
             role TEXT DEFAULT 'patient',  -- ✅ Default role as "patient"
+            current_token INTEGER DEFAULT 0,  -- ✅ Track current token number
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);

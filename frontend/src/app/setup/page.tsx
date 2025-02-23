@@ -25,7 +25,7 @@ export default function SetupPage() {
             if (!userId) return;
 
             try {
-                const response = await fetch(`http://localhost:8000/api/patient/${userId}`);
+                const response = await fetch(`http://localhost:8000/api/patient/get/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
 
@@ -118,7 +118,7 @@ export default function SetupPage() {
             router.push("/token");
         } catch (error) {
             console.error("Error:", error);
-            alert(error.message);
+            // alert(error.message);
         } finally {
             setLoading(false);
         }
@@ -172,8 +172,8 @@ export default function SetupPage() {
                     <Textarea placeholder="Past Surgeries / Hospitalizations" {...register("medicalHistory.pastSurgeriesOrHospitalizations")} />
 
                     <h2 className="text-lg font-semibold">Reason for Visit</h2>
-                    <Input placeholder="Presenting Symptoms"  />
-                    <Input placeholder="Duration of Symptoms"  />
+                    <Input placeholder="Presenting Symptoms"  {...register("reasonForVisit.presentingSymptoms")} />
+                    <Input placeholder="Duration of Symptoms"  {...register("reasonForVisit.durationOfSymptoms")} />
 
                     <h2 className="text-lg font-semibold">Emergency Contact</h2>
                     <Input placeholder="Name" {...register("emergencyContactInformation.name")} />
