@@ -1,6 +1,17 @@
 import streamlit as st
 from utils.database import DatabaseManager
 
+def initialize_session():
+    """Initialize session state variables if they don't already exist."""
+    if "user_profile" not in st.session_state:
+        st.session_state.user_profile = None  # No user logged in yet
+    
+    if "token" not in st.session_state:
+        st.session_state.token = None  # No token generated yet
+
+    if "user_type" not in st.session_state:
+        st.session_state.user_type = None  # No user type set yet
+
 def generate_otp():
     import random
     return str(random.randint(1000, 9999))

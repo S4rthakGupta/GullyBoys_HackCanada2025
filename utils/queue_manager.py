@@ -8,6 +8,26 @@ class QueueManager:
         self.db_name = db_name
         self.db_manager = DatabaseManager()
 
+    def get_tokens_for_patient(self, email):
+        """Fetch all tokens for a given patient from the queue."""
+        conn = self._connect()
+        cursor = conn.cursor()
+
+        # Query to get all tokens for the patient
+        cursor.execute("""
+            SELECT id AS 'Queue ID', main_symptom AS 'Main Symptom', 
+                   pain_level AS 'Pain Level', status AS 'Status'
+            FROM queue
+            WHERE email = ? AND status != 'Rejected'
+            ORDER BY timestamp DESC
+        """, (email,))
+        
+        tokens = cursor.fetchall()
+        conn.close()
+        
+        # Convert to DataFrame for easy display in Streamlit
+        return pd.DataFrame(tokens, columns=["Queue ID", "Main Symptom", "Pain Level", "Status"])
+
     def _connect(self):
         """Connect to the SQLite database."""
         return sqlite3.connect(self.db_name, check_same_thread=False)

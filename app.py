@@ -5,6 +5,7 @@ from pages.patient import show_patient_dashboard
 from pages.receptionist import show_receptionist_dashboard
 from utils.queue_manager import QueueManager
 from utils.database import DatabaseManager
+from pages import auth
 
 # ✅ Initialize local storage manager
 cookie_manager = stx.CookieManager()
@@ -22,6 +23,9 @@ if "queue_manager" not in st.session_state:
     st.session_state.queue_manager = QueueManager()
 if "db_manager" not in st.session_state:
     st.session_state.db_manager = DatabaseManager()
+
+# Initialize session state
+auth.initialize_session()
 
 def main():
     st.title("🏥 Walk-in Clinic Queue System")
