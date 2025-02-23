@@ -34,11 +34,12 @@ def show_pending_approvals():
                 if st.button("Approve", key=f"app_{patient['token_id']}"):
                     st.session_state.queue_manager.approve_token(patient['token_id'])
                     st.rerun()
-                if st.button("Reject", key=f"rej_{patient['token_id']}"):
-                    reason = st.text_input("Reason:", key=f"reason_{patient['token_id']}")
-                    if reason:
-                        st.session_state.queue_manager.reject_token(patient['token_id'], reason)
-                        st.rerun()
+                
+                # Add reject reason input first
+                reason = st.text_input("Reject reason:", key=f"reason_{patient['token_id']}")
+                if st.button("Reject", key=f"rej_{patient['token_id']}") and reason:
+                    st.session_state.queue_manager.reject_token(patient['token_id'], reason)
+                    st.rerun()
 
 def show_queue_management():
     queue = st.session_state.queue_manager.queue
