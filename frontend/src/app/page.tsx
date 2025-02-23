@@ -1,20 +1,45 @@
 "use client";
 
+import { useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-
-import {
-    SignedIn,
-    SignedOut,
-} from "@clerk/nextjs";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 import NavBar from "@/components/nav";
 
 export default function Home() {
+    const { isSignedIn, user } = useUser();
+
+    useEffect(() => {
+        if (!isSignedIn || !user) return; // Ensure user is logged in before running API call
+
+        console.log("User detected on Home Page:", user.id);
+
+        // Send user data to backend
+        fetch("http://localhost:8000/api/user/profile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+                phone: "", // Clerk does not provide a phone field
+                email: user.primaryEmailAddress?.emailAddress || "",
+                userId: user.id,
+            }),
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error("Failed to save user");
+                return res.json();
+            })
+            .then(() => console.log("User saved to database successfully!"))
+            .catch((error) => console.error("Error saving user:", error));
+    }, [isSignedIn, user]); // Run this effect when user state updates
+
     return (
         <main className="flex flex-col items-center justify-center min-h-screen px-6 bg-white text-black">
             <NavBar />
+            
             {/* Hero Section */}
             <section className="max-w-4xl text-center space-y-6">
                 <h1 className="text-5xl font-bold tracking-tight">
@@ -25,7 +50,6 @@ export default function Home() {
                 </p>
 
                 <SignedOut>
-                    {/* ✅ "Get Started" navigates to `/sign-up` */}
                     <Link href="/sign-up">
                         <Button variant="default" className="mr-3">
                             Get Started

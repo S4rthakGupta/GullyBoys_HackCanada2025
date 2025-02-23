@@ -5,8 +5,9 @@ const db = require('../config/database');
 
 // Create/Update user profile
 router.post('/profile', requireAuth, (req, res) => {
-    const { name, phone, email } = req.body;
-    const clerkUserId = req.auth.userId;
+    console.log('INSERTING req.body', req.body);
+    const { name, phone, email, userId } = req.body;
+    const clerkUserId = userId//req.auth.userId;
 
     db.run(`
         INSERT INTO users (clerk_user_id, name, phone, email) 

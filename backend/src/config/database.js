@@ -29,6 +29,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
     db.run(`
         CREATE TABLE IF NOT EXISTS patients (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            clerk_user_id TEXT,
             full_name TEXT,
             date_of_birth TEXT,
             gender TEXT,

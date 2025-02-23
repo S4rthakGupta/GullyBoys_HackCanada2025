@@ -6,6 +6,7 @@ const db = require('../config/database');
 // ✅ Register a New Patient
 router.post('/register', requireAuth, (req, res) => {
     const {
+        userId,
         personalInformation,
         healthInsuranceDetails,
         medicalHistory,
@@ -14,46 +15,122 @@ router.post('/register', requireAuth, (req, res) => {
         consentAndAcknowledgments
     } = req.body;
 
-    db.run(
-        `INSERT INTO patients (
-            full_name, date_of_birth, gender, address, phone_number, email_address,
-            health_card_number, international_student_id, 
-            current_medications, allergies, chronic_conditions, past_surgeries,
-            presenting_symptoms, duration_of_symptoms,
-            emergency_contact_name, emergency_contact_relationship, emergency_contact_number,
-            privacy_policy_agreement, treatment_consent, status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-            personalInformation.fullName,
-            personalInformation.dateOfBirth,
-            personalInformation.gender,
-            personalInformation.address,
-            personalInformation.phoneNumber,
-            personalInformation.emailAddress,
-            healthInsuranceDetails.healthCardNumber,
-            healthInsuranceDetails.internationalStudentId,
-            JSON.stringify(medicalHistory.currentMedications),
-            JSON.stringify(medicalHistory.allergies),
-            JSON.stringify(medicalHistory.chronicConditions),
-            JSON.stringify(medicalHistory.pastSurgeriesOrHospitalizations),
-            reasonForVisit.presentingSymptoms,
-            reasonForVisit.durationOfSymptoms,
-            emergencyContactInformation.name,
-            emergencyContactInformation.relationship,
-            emergencyContactInformation.emergencyContactNumber,
-            consentAndAcknowledgments.privacyPolicyAgreement ? 1 : 0,
-            consentAndAcknowledgments.treatmentConsent ? 1 : 0,
-            'waiting' // ✅ Default status for new patients
-        ],
-        (err) => {
+    console.log('Processing req.body', req.body);
+
+    db.get(`SELECT * FROM patients WHERE clerk_user_id = ?`, [userId], (err, row) => {
+        if (err) {
+            console.error('Error checking patient:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (row) {
+            // ✅ Update existing patient record
+            db.run(
+                `UPDATE patients SET 
+                    full_name = ?, date_of_birth = ?, gender = ?, address = ?, phone_number = ?, email_address = ?, 
+                    health_card_number = ?, international_student_id = ?, 
+                    current_medications = ?, allergies = ?, chronic_conditions = ?, past_surgeries = ?, 
+                    presenting_symptoms = ?, duration_of_symptoms = ?, 
+                    emergency_contact_name = ?, emergency_contact_relationship = ?, emergency_contact_number = ?, 
+                    privacy_policy_agreement = ?, treatment_consent = ?
+                WHERE clerk_user_id = ?`,
+                [
+                    personalInformation.fullName,
+                    personalInformation.dateOfBirth,
+                    personalInformation.gender,
+                    personalInformation.address,
+                    personalInformation.phoneNumber,
+                    personalInformation.emailAddress,
+                    healthInsuranceDetails.healthCardNumber,
+                    healthInsuranceDetails.internationalStudentId,
+                    JSON.stringify(medicalHistory.currentMedications),
+                    JSON.stringify(medicalHistory.allergies),
+                    JSON.stringify(medicalHistory.chronicConditions),
+                    JSON.stringify(medicalHistory.pastSurgeriesOrHospitalizations),
+                    reasonForVisit.presentingSymptoms,
+                    reasonForVisit.durationOfSymptoms,
+                    emergencyContactInformation.name,
+                    emergencyContactInformation.relationship,
+                    emergencyContactInformation.emergencyContactNumber,
+                    consentAndAcknowledgments.privacyPolicyAgreement ? 1 : 0,
+                    consentAndAcknowledgments.treatmentConsent ? 1 : 0,
+                    userId
+                ],
+                (updateErr) => {
+                    if (updateErr) {
+                        console.error('Error updating patient:', updateErr);
+                        return res.status(500).json({ error: 'Failed to update patient' });
+                    }
+                    res.json({ message: 'Patient record updated successfully' });
+                }
+            );
+        } else {
+            // ✅ Insert new patient record
+            db.run(
+                `INSERT INTO patients (
+                    clerk_user_id, full_name, date_of_birth, gender, address, phone_number, email_address,
+                    health_card_number, international_student_id, 
+                    current_medications, allergies, chronic_conditions, past_surgeries,
+                    presenting_symptoms, duration_of_symptoms,
+                    emergency_contact_name, emergency_contact_relationship, emergency_contact_number,
+                    privacy_policy_agreement, treatment_consent, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    userId,
+                    personalInformation.fullName,
+                    personalInformation.dateOfBirth,
+                    personalInformation.gender,
+                    personalInformation.address,
+                    personalInformation.phoneNumber,
+                    personalInformation.emailAddress,
+                    healthInsuranceDetails.healthCardNumber,
+                    healthInsuranceDetails.internationalStudentId,
+                    JSON.stringify(medicalHistory.currentMedications),
+                    JSON.stringify(medicalHistory.allergies),
+                    JSON.stringify(medicalHistory.chronicConditions),
+                    JSON.stringify(medicalHistory.pastSurgeriesOrHospitalizations),
+                    reasonForVisit.presentingSymptoms,
+                    reasonForVisit.durationOfSymptoms,
+                    emergencyContactInformation.name,
+                    emergencyContactInformation.relationship,
+                    emergencyContactInformation.emergencyContactNumber,
+                    consentAndAcknowledgments.privacyPolicyAgreement ? 1 : 0,
+                    consentAndAcknowledgments.treatmentConsent ? 1 : 0,
+                    'waiting' // ✅ Default status for new patients
+                ],
+                (insertErr) => {
+                    if (insertErr) {
+                        console.error('Error saving patient:', insertErr);
+                        return res.status(500).json({ error: 'Failed to register patient' });
+                    }
+                    res.json({ message: 'Patient registered successfully' });
+                }
+            );
+        }
+    });
+});
+
+
+// ✅ Fetch Patient Data
+router.get('/:userId', requireAuth, (req, res) => {
+    const { userId } = req.params;
+
+    db.get(
+        `SELECT * FROM patients WHERE clerk_user_id = ?`,
+        [userId],
+        (err, row) => {
             if (err) {
-                console.error('Error saving patient:', err);
-                return res.status(500).json({ error: 'Failed to register patient' });
+                console.error('Error fetching patient:', err);
+                return res.status(500).json({ error: 'Failed to fetch patient data' });
             }
-            res.json({ message: 'Patient registered successfully' });
+            if (!row) {
+                return res.status(404).json({ message: 'Patient not found' });
+            }
+            res.json(row);
         }
     );
 });
+
 
 // ✅ Get Patient List (Lobby & Queue)
 router.get('/patients', requireAuth, (req, res) => {

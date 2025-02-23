@@ -7,7 +7,7 @@ const redisClient = require('../config/redis');
 // Generate new token
 router.post('/generate', requireAuth, async (req, res) => {
     try {
-        const userId = req.auth.userId;
+        const userId = req.body.userId;
         
         // Get current token count from Redis
         let currentToken = await redisClient.get('current_token_count') || 0;
@@ -39,14 +39,15 @@ router.get('/current', async (req, res) => {
 });
 
 // Get user's token
-router.get('/my-token', requireAuth, async (req, res) => {
+router.get('/my-token/:userId', requireAuth, async (req, res) => {
     try {
-        const userId = req.auth.userId;
+        const { userId } = req.params;
         const token = await redisClient.get(`user_token:${userId}`);
         res.json({ token: token ? parseInt(token) : null });
     } catch (error) {
         res.status(500).json({ error: 'Failed to get token' });
     }
 });
+
 
 module.exports = router;
