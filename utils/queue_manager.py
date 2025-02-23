@@ -56,10 +56,11 @@ class QueueManager:
         cursor = conn.cursor()
         cursor.execute("""
             SELECT queue.id AS 'Queue ID', users.name AS 'Name', queue.position AS 'Queue Position',
-                   queue.main_symptom AS 'Main Symptom', queue.pain_level AS 'Pain Level',
-                   queue.timestamp AS 'Timestamp', queue.status AS 'Status'
+                queue.main_symptom AS 'Main Symptom', queue.pain_level AS 'Pain Level',
+                queue.timestamp AS 'Timestamp', queue.status AS 'Status'
             FROM queue
             JOIN users ON queue.email = users.email
+            WHERE queue.status != 'Rejected'  -- Exclude rejected tokens
             ORDER BY queue.position ASC
         """)
         queue_data = cursor.fetchall()
@@ -140,3 +141,15 @@ class QueueManager:
         total_served = cursor.fetchone()[0]
         conn.close()
         return total_served
+
+    def reject_token(self, token_id, reason):
+        """Reject the token and store the rejection reason."""
+        conn = self._connect()
+        cursor = conn.cursor()
+
+        # Update the queue with the rejection status and reason
+        cursor.execute("""
+            UPDATE queue SET status = 'Rejected', reason = ? WHERE id = ?
+        """, (reason, token_id))
+        conn.commit()
+        conn.close()
