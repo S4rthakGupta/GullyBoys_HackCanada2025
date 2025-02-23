@@ -43,7 +43,7 @@ def show_pending_approvals():
 
 
 def show_queue_management():
-    """✅ Fetch queue list from SQLite instead of queue memory"""
+    """✅ Fetch queue list and display basic analytics."""
     queue_df = st.session_state.queue_manager.get_queue_list()
 
     st.subheader("Current Queue")
@@ -57,7 +57,11 @@ def show_queue_management():
     with col1:
         st.metric("Patients Waiting", len(queue_df))
     with col2:
-        st.metric("Avg Wait Time", f"{len(queue_df) * 15} mins")
+        avg_wait_time = st.session_state.queue_manager.get_average_wait_time()
+        st.metric("Avg Wait Time", f"{avg_wait_time} mins")  # Show avg wait time
+
+    # ✅ Total patients served
+    st.metric("Total Patients Served Today", st.session_state.queue_manager.get_total_patients_served())
 
     # ✅ Display queue in Streamlit DataFrame
     st.dataframe(queue_df)
@@ -65,16 +69,13 @@ def show_queue_management():
     for _, patient in queue_df.iterrows():
         col1, col2, col3 = st.columns([2, 2, 1])
         with col1:
-            st.write(f"Token #{patient['Queue ID']} - {patient['Name']}")  # ✅ Now correctly matched
-            st.write(f"Issue: {patient['Main Symptom']}")  # ✅ Corrected column name
+            st.write(f"Token #{patient['Queue ID']} - {patient['Name']}")
+            st.write(f"Issue: {patient['Main Symptom']}")
         with col2:
-            st.write(f"Pain Level: {patient['Pain Level']}")  # ✅ Corrected column name
-            if "Timestamp" in patient:
-                wait_time = (datetime.now() - pd.to_datetime(patient['Timestamp'])).total_seconds() / 60
-                st.write(f"Wait Time: {round(wait_time)} mins")
-            else:
-                st.write("Wait Time: N/A")
+            st.write(f"Pain Level: {patient['Pain Level']}")
+            wait_time = (datetime.now() - pd.to_datetime(patient['Timestamp'])).total_seconds() / 60
+            st.write(f"Wait Time: {round(wait_time)} mins")
         with col3:
-            if st.button("Call Next", key=f"call_{patient['Queue ID']}"):  # ✅ Now correctly matched
-                st.session_state.queue_manager.update_status(patient['Queue ID'], 'Called')  # ✅ Now correctly matched
+            if st.button("Call Next", key=f"call_{patient['Queue ID']}"):
+                st.session_state.queue_manager.update_status(patient['Queue ID'], 'Called')
                 st.rerun()
