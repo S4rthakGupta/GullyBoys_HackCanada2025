@@ -4,7 +4,7 @@ pandas==2.2.0
 python-dateutil==2.8.2
 
 # ✅ Cookie Management
-extra-streamlit-components==0.1.65  # Required for cookies
+extra-streamlit-components # Required for cookies
 
 # ✅ Environment Variable Management
 python-dotenv==1.0.1
